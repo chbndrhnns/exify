@@ -50,7 +50,7 @@ class FileAttributeMap(BaseModel):
 
 
 class ExifySettings(BaseSettings):
-    base_dir: Path = Field()
+    base_dir: Path = Field(..., env='BASE_DIR')
     system: str = platform.system()
     file_attribute = Union[MacFileAttribute, WindowsFileAttribute, LinuxFileAttribute]
 
@@ -67,4 +67,4 @@ class TimestampData(BaseModel):
     file_name: Optional[datetime]
     file_created: datetime
     file_modified: datetime
-    exif_created: MutableMapping[Union[ExifTimestampAttribute, ExifTimezoneAttribute], datetime]
+    exif_created: Optional[MutableMapping[Union[ExifTimestampAttribute, ExifTimezoneAttribute], datetime]]

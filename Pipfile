@@ -4,12 +4,15 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pytest = "*"
+pytest-asyncio = "*"
+pytest-mock = "*"
 
 [packages]
-pytest = "*"
-exif = "*"
 loguru = "*"
 pydantic = {extras = ["dotenv"], version = "*"}
+aiofiles = "*"
+exif = {editable = true, git = "https://github.com/chbndrhnns/exif", ref = "image-takes-binary-data"}
 
 [requires]
 python_version = "3.8"
