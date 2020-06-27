@@ -4,15 +4,14 @@ from collections import defaultdict, OrderedDict
 from datetime import datetime, timedelta
 from enum import Enum
 from functools import lru_cache
-from pathlib import Path
-from typing import Dict, MutableMapping, Optional
+from operator import itemgetter
+from typing import MutableMapping, List
 
 import aiofiles
 from exif import Image
 from loguru import logger
 
-from exify.models import ExifySettings, TimestampData, ExifTimestampAttribute
-from exify.utils import utcnow
+from exify.models import ExifySettings, FileItem, ExifTimestampAttribute, Timestamps
 
 ACCEPTABLE_TIME_DELTA = timedelta(days=30)
 
@@ -36,76 +35,88 @@ class WhatsappFileAnalyzer:
     FILENAME_PATTERN = r'\d{8}'
     FILENAME_DATE_FORMAT = '%Y%m%d'
 
-    def __init__(self, f: Path, *, settings=None):
+    def __init__(self, item: FileItem, *, settings=None):
         self._settings = settings or get_settings()
-        self._timestamp_data: Optional[TimestampData] = None
 
-        if not f.is_absolute():
-            f = self._settings.base_dir / f
-        self._target = f
+        if not isinstance(item, FileItem):
+            raise ValueError('item must be of type FileItem')
+        self._item: FileItem = item
 
-    async def _get_timestamp_from_filename(self) -> datetime:
-        pattern = re.compile(self.FILENAME_PATTERN)
-        matcher = pattern.search(self._target.stem)
-        result = matcher.group(0)
-        parsed = datetime.strptime(result, self.FILENAME_DATE_FORMAT)
+    @property
+    def item(self):
+        return self._item
 
-        self._log_timestamp_results(timestamp=parsed, src='file name')
-        return parsed
+    async def analyze_timestamp(self) -> FileItem:
+        logger.info(f'[ ] Analyzing {self._item.file}')
 
-    def _log_timestamp_results(self, timestamp, *, src, type_='created'):
-        logger.debug(f'{self._target}: {type_} ({src}): {timestamp}')
+        await self.gather_timestamp_data()
+        if self.deviation_is_ok():
+            self.item.results.deviation_ok = True
 
-    async def _get_timestamp_from_file_system(self, attr: Enum) -> datetime:
-        result = getattr(self._target.lstat(), attr)
-        parsed = datetime.fromtimestamp(result)
-
-        self._log_timestamp_results(timestamp=parsed, src='file system', type_=attr.name)
-        return parsed
-
-    async def _get_timestamp_from_exif(self, attr: Enum) -> datetime:
-        async with aiofiles.open(self._target, mode='rb') as f:
-            error_msg = f'No EXIF timestamps found in {self._target}'
-            img = Image(await f.read())
-
-            if found := await _find_exif_timestamps(img):
-                self._log_timestamp_results(timestamp=found, src='EXIF', type_=attr.name)
-                return found
-            logger.warning(error_msg)
-            raise NoExifDataFoundError(error_msg)
-
-    async def analyze_timestamp(self) -> Dict[Path, TimestampData]:
-        logger.info(f'Analyzing {self._target}')
-
-        data = await self.gather_timestamp_data()
-
-        return data
+        logger.info(f'[X] Analyzing {self._item.file}')
 
     async def gather_timestamp_data(self):
         try:
             exif_data = await self._get_timestamp_from_exif(ExifTimestampAttribute.datetime)
         except NoExifDataFoundError:
-            exif_data = None
-        self._timestamp_data = TimestampData(
-            file=self._target,
+            exif_data = {}
+        self._item.timestamps = Timestamps(
             file_name=await self._get_timestamp_from_filename(),
             file_created=await self._get_timestamp_from_file_system(self._settings.file_attribute.created),
             file_modified=await self._get_timestamp_from_file_system(self._settings.file_attribute.modified),
             exif=exif_data,
         )
-        return self._timestamp_data
 
-    async def deviation_is_ok(self, max_deviation: timedelta = ACCEPTABLE_TIME_DELTA):
+    def deviation_is_ok(self, max_deviation: timedelta = ACCEPTABLE_TIME_DELTA):
         flattened = {
-            **self._timestamp_data.dict(exclude={'exif', 'file'}),
-            **self._timestamp_data.exif
+            **self.item.timestamps.dict(exclude={'exif'}),
+            **self.item.timestamps.exif
         }
-        ordered = OrderedDict(sorted(flattened.items(), key=lambda t: t[0]))
-        vals = list(ordered.values())
-        oldest = vals[-1]
-        youngest = vals[0]
+        ordered = OrderedDict(sorted(flattened.items(), key=itemgetter(1)))
+        timestamps = list(ordered.values())
+        oldest = timestamps[-1]
+        youngest = timestamps[0]
 
         return oldest - youngest < max_deviation
+
+    async def _get_timestamp_from_filename(self) -> datetime:
+        pattern = re.compile(self.FILENAME_PATTERN)
+        matcher = pattern.search(self._item.file.stem)
+        result = matcher.group(0)
+        parsed = datetime.strptime(result, self.FILENAME_DATE_FORMAT)
+
+        self._log_timestamp_results(timestamp=parsed, src='name')
+        return parsed
+
+    def _log_timestamp_results(self, timestamp, *, src, type_='created'):
+        logger.debug(f'{self._item.file}: {src}({type_}): {timestamp}')
+
+    async def _get_timestamp_from_file_system(self, attr: Enum) -> datetime:
+        result = getattr(self._item.file.lstat(), attr)
+        parsed = datetime.fromtimestamp(result)
+
+        self._log_timestamp_results(timestamp=parsed, src='fs', type_=attr.name)
+        return parsed
+
+    async def _get_timestamp_from_exif(self, attr: Enum) -> datetime:
+        async with aiofiles.open(self._item.file, mode='rb') as f:
+            error_msg = f'No EXIF timestamps found in {self._item}'
+            img = Image(await f.read())
+
+            if found := await _find_exif_timestamps(img):
+                [
+                    self._log_timestamp_results(timestamp=f"{val}", src='EXIF', type_=attr)
+                    for attr, val in found.items()
+                ]
+                return found
+            logger.warning(error_msg)
+            raise NoExifDataFoundError(error_msg)
+
+
+def _expand_to_absolute_path(file):
+    if not file.is_absolute():
+        file = get_settings().base_dir / file
+    return file.absolute()
 
 
 async def run(settings: ExifySettings):
@@ -113,11 +124,35 @@ async def run(settings: ExifySettings):
     logger.info(f'Running on {src}...')
 
     if files := [x for x in src.iterdir() if x.is_file()]:
-        results = {f: await WhatsappFileAnalyzer(f, settings=settings).analyze_timestamp() for f in files}
+        results = await analyze_files(files, settings)
+        await analyze_results(results)
 
-        for filename, result in results.items():
-            logger.info(f'{filename}: {result}')
-            break
+
+async def analyze_results(items: List[FileItem]):
+    ok = []
+    not_ok = []
+    for item in items.values():
+        if any([res for res in item.results]):
+            not_ok.append(item)
+        else:
+            ok.append(item)
+
+    logger.info(f'OK: {len(ok)}')
+    logger.info(f'NOT OK: {len(not_ok)}')
+
+
+async def analyze_files(files, settings):
+    results = defaultdict(FileItem)
+    for filename in files:
+        filename = _expand_to_absolute_path(filename)
+        item = FileItem(
+            file=filename
+        )
+        results[filename] = item
+
+        await WhatsappFileAnalyzer(item, settings=settings).analyze_timestamp()
+        logger.info(f'{filename}: {item.results}')
+    return results
 
 
 @lru_cache

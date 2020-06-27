@@ -4,8 +4,8 @@ from pathlib import Path
 import pytest
 from pydantic import BaseModel
 
-from exify.__main__ import WhatsappFileAnalyzer
-from exify.models import TimestampData, ExifTimestampAttribute
+from exify.__main__ import WhatsappFileAnalyzer, _expand_to_absolute_path
+from exify.models import FileItem, ExifTimestampAttribute, Timestamps, AnalysisResults
 from exify.utils import datetime_from_timestamp, utcnow
 
 EXAMPLES_DIR = Path('data')
@@ -13,6 +13,10 @@ EXAMPLES_DIR = Path('data')
 
 class Examples(BaseModel):
     no_exif: Path = EXAMPLES_DIR / 'IMG-20140430-WA0004.jpg'
+
+
+class FakeItem(FileItem):
+    file: Path = Path()
 
 
 @pytest.fixture
@@ -24,53 +28,59 @@ def examples():
 class TestAnalyze:
     async def test_no_exif_found(self, examples):
         # arrange
-        analyzer = WhatsappFileAnalyzer(examples.no_exif)
+        item = FileItem(
+            file=_expand_to_absolute_path(examples.no_exif)
+        )
+        analyzer = WhatsappFileAnalyzer(item)
 
         # act
-        result = await analyzer.analyze_timestamp()
+        await analyzer.analyze_timestamp()
 
         # assert
-        assert not result.exif
+        assert not analyzer._item.timestamps.exif
 
 
 @pytest.mark.asyncio
 class TestCheckDeviations:
     @pytest.fixture
     def acceptable_deviations(self):
-        return TimestampData(
+        return FileItem(
             file=Path('some-file.jpg'),
-            file_name=utcnow(),
-            file_created=utcnow(),
-            file_modified=utcnow(),
-            exif={
-                ExifTimestampAttribute.datetime: utcnow()
-            }
+            timestamps=Timestamps(
+                file_name=utcnow(),
+                file_created=utcnow(),
+                file_modified=utcnow(),
+                exif={
+                    ExifTimestampAttribute.datetime: utcnow()
+                }
+            ),
+            results=AnalysisResults()
         )
 
     @pytest.fixture
     def too_much_deviations(self):
-        return TimestampData(
+        return FileItem(
             file=Path('some-file.jpg'),
-            file_name=utcnow() + timedelta(minutes=1),
-            file_created=utcnow(),
-            file_modified=utcnow(),
-            exif={
-                ExifTimestampAttribute.datetime: utcnow()
-            }
+            timestamps=Timestamps(
+                file_name=utcnow() + timedelta(minutes=1),
+                file_created=utcnow(),
+                file_modified=utcnow(),
+                exif={
+                    ExifTimestampAttribute.datetime: utcnow()
+                }),
+        results = AnalysisResults()
         )
 
-    async def test_deviation_ok(self, acceptable_deviations):
-        # arrange
-        analyzer = WhatsappFileAnalyzer(Path())
-        analyzer._timestamp_data = acceptable_deviations
+        async def test_deviation_ok(self, acceptable_deviations):
+            # arrange
+            analyzer = WhatsappFileAnalyzer(acceptable_deviations)
 
-        # act
-        assert await analyzer.deviation_is_ok()
+            # act
+            assert analyzer.deviation_is_ok()
 
-    async def test_deviation_not_ok(self, too_much_deviations):
-        # arrange
-        analyzer = WhatsappFileAnalyzer(Path())
-        analyzer._timestamp_data = too_much_deviations
+        async def test_deviation_not_ok(self, too_much_deviations):
+            # arrange
+            analyzer = WhatsappFileAnalyzer(too_much_deviations)
 
-        # act
-        assert not await analyzer.deviation_is_ok(max_deviation=timedelta(seconds=2))
+            # act
+            assert not analyzer.deviation_is_ok(max_deviation=timedelta(seconds=2))

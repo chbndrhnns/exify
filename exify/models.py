@@ -4,7 +4,12 @@ from enum import Enum
 from pathlib import Path
 from typing import Union, Optional, MutableMapping
 
-from pydantic import BaseModel, BaseSettings, Field, root_validator
+from pydantic import BaseModel, BaseSettings, Field, root_validator, Extra
+
+
+class ExifyBaseModel(BaseModel):
+    class Config:
+        extra = Extra.forbid
 
 
 class ExifTimezoneAttribute(str, Enum):
@@ -43,7 +48,7 @@ class LinuxFileAttribute(str, Enum):
     modified = 'st_mtime'
 
 
-class FileAttributeMap(BaseModel):
+class FileAttributeMap(ExifyBaseModel):
     Darwin: Enum = MacFileAttribute
     Linux: Enum = LinuxFileAttribute
     Windows: Enum = WindowsFileAttribute
@@ -63,9 +68,18 @@ class ExifySettings(BaseSettings):
         env_file = '.env'
 
 
-class TimestampData(BaseModel):
-    file: Path
+class Timestamps(ExifyBaseModel):
     file_name: Optional[datetime]
-    file_created: datetime
-    file_modified: datetime
-    exif: Optional[MutableMapping[Union[ExifTimestampAttribute, ExifTimezoneAttribute], datetime]]
+    file_created: Optional[datetime]
+    file_modified: Optional[datetime]
+    exif: Optional[MutableMapping[Union[ExifTimestampAttribute, ExifTimezoneAttribute], datetime]] = {}
+
+
+class AnalysisResults(ExifyBaseModel):
+    deviation_ok: bool = False
+
+
+class FileItem(ExifyBaseModel):
+    file: Path
+    timestamps: Timestamps = Timestamps()
+    results: AnalysisResults = AnalysisResults()
