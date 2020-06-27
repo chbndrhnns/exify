@@ -1,17 +1,20 @@
 import asyncio
 import re
-from collections import defaultdict
-from datetime import datetime
+from collections import defaultdict, OrderedDict
+from datetime import datetime, timedelta
 from enum import Enum
 from functools import lru_cache
 from pathlib import Path
-from typing import Dict, MutableMapping
+from typing import Dict, MutableMapping, Optional
 
 import aiofiles
 from exif import Image
 from loguru import logger
 
 from exify.models import ExifySettings, TimestampData, ExifTimestampAttribute
+from exify.utils import utcnow
+
+ACCEPTABLE_TIME_DELTA = timedelta(days=30)
 
 
 class NoExifDataFoundError(Exception):
@@ -35,6 +38,7 @@ class WhatsappFileAnalyzer:
 
     def __init__(self, f: Path, *, settings=None):
         self._settings = settings or get_settings()
+        self._timestamp_data: Optional[TimestampData] = None
 
         if not f.is_absolute():
             f = self._settings.base_dir / f
@@ -82,13 +86,26 @@ class WhatsappFileAnalyzer:
             exif_data = await self._get_timestamp_from_exif(ExifTimestampAttribute.datetime)
         except NoExifDataFoundError:
             exif_data = None
-        data = TimestampData(
+        self._timestamp_data = TimestampData(
+            file=self._target,
             file_name=await self._get_timestamp_from_filename(),
             file_created=await self._get_timestamp_from_file_system(self._settings.file_attribute.created),
             file_modified=await self._get_timestamp_from_file_system(self._settings.file_attribute.modified),
-            exif_created=exif_data,
+            exif=exif_data,
         )
-        return data
+        return self._timestamp_data
+
+    async def deviation_is_ok(self, max_deviation: timedelta = ACCEPTABLE_TIME_DELTA):
+        flattened = {
+            **self._timestamp_data.dict(exclude={'exif', 'file'}),
+            **self._timestamp_data.exif
+        }
+        ordered = OrderedDict(sorted(flattened.items(), key=lambda t: t[0]))
+        vals = list(ordered.values())
+        oldest = vals[-1]
+        youngest = vals[0]
+
+        return oldest - youngest < max_deviation
 
 
 async def run(settings: ExifySettings):
@@ -105,8 +122,7 @@ async def run(settings: ExifySettings):
 
 @lru_cache
 def get_settings():
-    settings = ExifySettings()
-    return settings
+    return ExifySettings()
 
 
 if __name__ == '__main__':

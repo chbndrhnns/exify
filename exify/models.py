@@ -64,7 +64,8 @@ class ExifySettings(BaseSettings):
 
 
 class TimestampData(BaseModel):
+    file: Path
     file_name: Optional[datetime]
     file_created: datetime
     file_modified: datetime
-    exif_created: Optional[MutableMapping[Union[ExifTimestampAttribute, ExifTimezoneAttribute], datetime]]
+    exif: Optional[MutableMapping[Union[ExifTimestampAttribute, ExifTimezoneAttribute], datetime]]
