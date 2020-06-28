@@ -5,12 +5,13 @@ from datetime import datetime, timedelta
 from enum import Enum
 from functools import lru_cache
 from operator import itemgetter
-from typing import MutableMapping, List
+from typing import MutableMapping, List, Optional
 
 import aiofiles
 from exif import Image
 from loguru import logger
 
+from exify.adapter.exif_adapter import ExifAdapter
 from exify.models import ExifySettings, FileItem, ExifTimestampAttribute, Timestamps
 
 ACCEPTABLE_TIME_DELTA = timedelta(days=30)
@@ -35,8 +36,9 @@ class WhatsappFileAnalyzer:
     FILENAME_PATTERN = r'\d{8}'
     FILENAME_DATE_FORMAT = '%Y%m%d'
 
-    def __init__(self, item: FileItem, *, settings=None):
+    def __init__(self, item: FileItem, *, settings=None, adapter: Optional[ExifAdapter] = None):
         self._settings = settings or get_settings()
+        self._adapter = adapter or ExifAdapter()
 
         if not isinstance(item, FileItem):
             raise ValueError('item must be of type FileItem')
@@ -99,18 +101,17 @@ class WhatsappFileAnalyzer:
         return parsed
 
     async def _get_timestamp_from_exif(self, attr: Enum) -> datetime:
-        async with aiofiles.open(self._item.file, mode='rb') as f:
-            error_msg = f'No EXIF timestamps found in {self._item}'
-            img = Image(await f.read())
+        error_msg = f'No EXIF timestamps found in {self._item.file}'
+        image = await self._adapter.get_exif_data(self._item.file)
 
-            if found := await _find_exif_timestamps(img):
-                [
-                    self._log_timestamp_results(timestamp=f"{val}", src='EXIF', type_=attr)
-                    for attr, val in found.items()
-                ]
-                return found
-            logger.warning(error_msg)
-            raise NoExifDataFoundError(error_msg)
+        if found := await _find_exif_timestamps(image):
+            [
+                self._log_timestamp_results(timestamp=f"{val}", src='EXIF', type_=attr)
+                for attr, val in found.items()
+            ]
+            return found
+        logger.warning(error_msg)
+        raise NoExifDataFoundError(error_msg)
 
 
 def _expand_to_absolute_path(file):
