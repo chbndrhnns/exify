@@ -1,10 +1,11 @@
+import shutil
 from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytest
 from pydantic import BaseModel
 
-from exify.__main__ import WhatsappFileAnalyzer, _expand_to_absolute_path
+from exify.__main__ import WhatsappFileAnalyzer, _expand_to_absolute_path, WhatsappTimestampWriter
 from exify.models import FileItem, ExifTimestampAttribute, Timestamps, AnalysisResults
 from exify.utils import datetime_from_timestamp, utcnow
 
@@ -68,7 +69,7 @@ class TestCheckDeviations:
                 exif={
                     ExifTimestampAttribute.datetime: utcnow()
                 }),
-        results = AnalysisResults()
+            results=AnalysisResults()
         )
 
     async def test_deviation_ok(self, acceptable_deviations):
@@ -84,3 +85,43 @@ class TestCheckDeviations:
 
         # act
         assert not analyzer.deviation_is_ok(max_deviation=timedelta(seconds=2))
+
+
+@pytest.mark.asyncio
+class TestGenerateExifData:
+    @pytest.fixture
+    def test_file(self):
+        return _expand_to_absolute_path(Examples().no_exif)
+
+    @pytest.fixture
+    def test_path(self, tmp_path):
+        yield tmp_path
+
+    @pytest.fixture(autouse=True)
+    def duplicate_test_file(self, test_path, test_file):
+        dest = test_path / test_file.name
+        dest.write_bytes(test_file.read_bytes())
+
+    @pytest.fixture
+    def item(self, test_path, test_file):
+        return FileItem(
+            file=test_path / test_file.name
+        )
+
+    @pytest.fixture
+    async def analyzer(self, item):
+        analyzer = WhatsappFileAnalyzer(item)
+        await analyzer.analyze_timestamp()
+        return analyzer
+
+    async def test_generate_exif_data(self, analyzer: WhatsappFileAnalyzer):
+        # arrange
+        writer = WhatsappTimestampWriter(analyzer._item)
+        assert not writer._item.timestamps.exif
+
+        # act
+        await writer.generate_exif_timestamp()
+
+        # assert
+        ts = writer._item.timestamps.exif[ExifTimestampAttribute.datetime]
+        assert ts == analyzer._item.timestamps.file_name

@@ -14,6 +14,8 @@ from loguru import logger
 from exify.adapter.exif_adapter import ExifAdapter
 from exify.models import ExifySettings, FileItem, ExifTimestampAttribute, Timestamps
 
+EXIF_TIMESTAMP_FORMAT = '%Y:%m:%d %H:%M:%S'
+
 ACCEPTABLE_TIME_DELTA = timedelta(days=30)
 
 
@@ -22,14 +24,29 @@ class NoExifDataFoundError(Exception):
 
 
 async def _find_exif_timestamps(img: Image) -> MutableMapping[str, datetime]:
-    exif_timestamp_format = '%Y:%m:%d %H:%M:%S'
-
     if img.has_exif:
         found = defaultdict(datetime)
         for attr in ExifTimestampAttribute.list():
             if raw := getattr(img, attr, None):
-                found[attr] = datetime.strptime(raw, exif_timestamp_format)
+                found[attr] = datetime.strptime(raw, EXIF_TIMESTAMP_FORMAT)
         return found
+
+
+class WhatsappTimestampWriter:
+
+    def __init__(self, item: FileItem, *, settings=None, adapter: Optional[ExifAdapter] = None):
+        self._item: FileItem = item
+        self._settings = settings or get_settings()
+        self._adapter = adapter or ExifAdapter()
+
+    async def write_exif_data(self):
+        pass
+
+    async def generate_exif_timestamp(self) -> str:
+        ts = self._item.timestamps.file_name
+        attr = ExifTimestampAttribute.datetime
+        self._item.timestamps.exif[attr] = ts
+        logger.debug(f'Setting {attr.datetime} to "{ts}"')
 
 
 class WhatsappFileAnalyzer:
@@ -59,7 +76,7 @@ class WhatsappFileAnalyzer:
 
     async def gather_timestamp_data(self):
         try:
-            exif_data = await self._get_timestamp_from_exif(ExifTimestampAttribute.datetime)
+            exif_data = await self._get_timestamp_from_exif()
         except NoExifDataFoundError:
             exif_data = {}
         self._item.timestamps = Timestamps(
@@ -100,7 +117,7 @@ class WhatsappFileAnalyzer:
         self._log_timestamp_results(timestamp=parsed, src='fs', type_=attr.name)
         return parsed
 
-    async def _get_timestamp_from_exif(self, attr: Enum) -> datetime:
+    async def _get_timestamp_from_exif(self) -> MutableMapping[str, datetime]:
         error_msg = f'No EXIF timestamps found in {self._item.file}'
         image = await self._adapter.get_exif_data(self._item.file)
 
