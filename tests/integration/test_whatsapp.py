@@ -71,16 +71,16 @@ class TestCheckDeviations:
         results = AnalysisResults()
         )
 
-        async def test_deviation_ok(self, acceptable_deviations):
-            # arrange
-            analyzer = WhatsappFileAnalyzer(acceptable_deviations)
+    async def test_deviation_ok(self, acceptable_deviations):
+        # arrange
+        analyzer = WhatsappFileAnalyzer(acceptable_deviations)
 
-            # act
-            assert analyzer.deviation_is_ok()
+        # act
+        assert analyzer.deviation_is_ok()
 
-        async def test_deviation_not_ok(self, too_much_deviations):
-            # arrange
-            analyzer = WhatsappFileAnalyzer(too_much_deviations)
+    async def test_deviation_not_ok(self, too_much_deviations):
+        # arrange
+        analyzer = WhatsappFileAnalyzer(too_much_deviations)
 
-            # act
-            assert not analyzer.deviation_is_ok(max_deviation=timedelta(seconds=2))
+        # act
+        assert not analyzer.deviation_is_ok(max_deviation=timedelta(seconds=2))
