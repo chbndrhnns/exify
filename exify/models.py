@@ -6,6 +6,8 @@ from typing import Union, Optional, MutableMapping
 
 from pydantic import BaseModel, BaseSettings, Field, root_validator, Extra
 
+from exify import PROJECT_ROOT
+
 
 class ExifyBaseModel(BaseModel):
     class Config:
@@ -64,8 +66,15 @@ class ExifySettings(BaseSettings):
         values['file_attribute'] = getattr(FileAttributeMap, values['system'])
         return values
 
+    @root_validator
+    def make_base_dir_absolute(cls, values):
+        base_dir = values.get('base_dir')
+        if not Path(base_dir).is_absolute():
+            values['base_dir']= (PROJECT_ROOT / base_dir).expanduser().absolute()
+        return values
+
     class Config:
-        env_file = '.env'
+        env_file = PROJECT_ROOT / '.env'
 
 
 class Timestamps(ExifyBaseModel):
