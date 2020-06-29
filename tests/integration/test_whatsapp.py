@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytest
+from loguru import logger
 from pydantic import BaseModel
 
 from exify.__main__ import WhatsappFileAnalyzer, _expand_to_absolute_path, WhatsappTimestampWriter
@@ -95,11 +96,14 @@ class TestGenerateExifData:
 
     @pytest.fixture
     def test_path(self, tmp_path):
+        logger.info(f'Creating temporary directory: {tmp_path}')
         yield tmp_path
+        logger.info(f'Deleting temporary directory: {tmp_path}')
 
     @pytest.fixture(autouse=True)
     def duplicate_test_file(self, test_path, test_file):
         dest = test_path / test_file.name
+        logger.info(f'Creating test file: {dest}')
         dest.write_bytes(test_file.read_bytes())
 
     @pytest.fixture
