@@ -2,7 +2,7 @@ import platform
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Union, Optional, MutableMapping
+from typing import Union, Optional, MutableMapping, List
 
 from pydantic import BaseModel, BaseSettings, Field, root_validator, Extra
 
@@ -15,23 +15,24 @@ class ExifyBaseModel(BaseModel):
 
 
 class ExifTimezoneAttribute(str, Enum):
-    offset = 'offset_time'
-    offset_original = 'offset_time_original'
-    offset_digitized = 'offset_time_digitized'
+    offset = 'OffsetTime'
+    offset_original = 'OffsetTimeOriginal'
+    offset_digitized = 'OffsetTimeDigitized'
 
     @staticmethod
-    def list():
+    def list() -> List:
         return list(map(lambda a: a.value, ExifTimezoneAttribute))
 
 
 class ExifTimestampAttribute(str, Enum):
-    datetime = 'datetime'
-    original = 'datetime_original'
-    digitized = 'datetime_digitized'
-    gps_timestamp = 'gps_timestamp'
+    """Map internal attribute names to EXIF attribute names"""
+    datetime = 'DateTime'
+    original = 'DateTimeOriginal'
+    digitized = 'DateTimeDigitized'
+    gps_timestamp = 'GPSTimeStamp'
 
     @staticmethod
-    def list():
+    def list() -> List:
         return list(map(lambda a: a.value, ExifTimestampAttribute))
 
 
@@ -70,7 +71,7 @@ class ExifySettings(BaseSettings):
     def make_base_dir_absolute(cls, values):
         base_dir = values.get('base_dir')
         if not Path(base_dir).is_absolute():
-            values['base_dir']= (PROJECT_ROOT / base_dir).expanduser().absolute()
+            values['base_dir'] = (PROJECT_ROOT / base_dir).expanduser().absolute()
         return values
 
     class Config:
@@ -81,7 +82,9 @@ class Timestamps(ExifyBaseModel):
     file_name: Optional[datetime]
     file_created: Optional[datetime]
     file_modified: Optional[datetime]
-    exif: Optional[MutableMapping[Union[ExifTimestampAttribute, ExifTimezoneAttribute], datetime]] = {}
+    exif: Optional[MutableMapping[Union[ExifTimestampAttribute, ExifTimezoneAttribute], datetime]] = {
+
+    }
 
 
 class AnalysisResults(ExifyBaseModel):

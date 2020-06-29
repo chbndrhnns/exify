@@ -11,8 +11,7 @@ pytest-mock = "*"
 [packages]
 loguru = "*"
 pydantic = {extras = ["dotenv"], version = "*"}
-aiofiles = "*"
-exif = {editable = true, git = "https://github.com/chbndrhnns/exif", ref = "image-takes-binary-data"}
+piexif = "*"
 
 [requires]
 python_version = "3.8"

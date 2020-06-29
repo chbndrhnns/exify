@@ -6,7 +6,10 @@ import pytest
 from loguru import logger
 from pydantic import BaseModel
 
-from exify.__main__ import WhatsappFileAnalyzer, _expand_to_absolute_path, WhatsappTimestampWriter
+from exify.__main__ import _expand_to_absolute_path
+from exify.writer.whatsapp_writer import WhatsappTimestampWriter
+from exify.constants import DEFAULT_EXIF_TIMESTAMP_ATTRIBUTE
+from exify.analyzer.whatsapp_analyzer import WhatsappFileAnalyzer
 from exify.models import FileItem, ExifTimestampAttribute, Timestamps, AnalysisResults
 from exify.utils import datetime_from_timestamp, utcnow
 
@@ -127,5 +130,17 @@ class TestGenerateExifData:
         await writer.generate_exif_timestamp()
 
         # assert
-        ts = writer._item.timestamps.exif[ExifTimestampAttribute.datetime]
+        ts = writer._item.timestamps.exif[DEFAULT_EXIF_TIMESTAMP_ATTRIBUTE]
         assert ts == analyzer._item.timestamps.file_name
+
+    async def test_write_exif_data(self, analyzer: WhatsappFileAnalyzer):
+        # arrange
+        writer = WhatsappTimestampWriter(analyzer._item, adapter=analyzer._adapter)
+
+        # act
+        await writer.write_exif_data()
+
+        # assert
+        analyzer = WhatsappFileAnalyzer(item=writer._item)
+        await analyzer.gather_timestamp_data()
+        assert analyzer._item.timestamps.exif[DEFAULT_EXIF_TIMESTAMP_ATTRIBUTE]

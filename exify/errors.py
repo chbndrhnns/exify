@@ -1,0 +1,2 @@
+class NoExifDataFoundError(Exception):
+    """NoExifDataFoundError"""

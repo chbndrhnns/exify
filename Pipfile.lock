@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ae18fac973216bd8965d67cff10b3ef06521ca37954ad04317ddd2e47307e233"
+            "sha256": "d64777fd5c87ed8e0bf04cf7d32aaeb7d1b9b27d4e897aebc02232348681b348"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,23 +16,6 @@
         ]
     },
     "default": {
-        "aiofiles": {
-            "hashes": [
-                "sha256:377fdf7815cc611870c59cbd07b68b180841d2a2b79812d8c218be02448c2acb",
-                "sha256:98e6bcfd1b50f97db4980e182ddd509b7cc35909e903a8fe50d8849e02d815af"
-            ],
-            "index": "pypi",
-            "version": "==0.5.0"
-        },
-        "exif": {
-            "editable": true,
-            "git": "https://github.com/chbndrhnns/exif",
-            "hashes": [
-                "sha256:118eaf0e77e6b1f610c20beee3fabe882041a4f36bdac3bf0f7cf55a55a01f96",
-                "sha256:d702d5588e6210e9a3e1298d82a2842125b4945cd3893931fa4aa2e2a01a5017"
-            ],
-            "ref": "2f64ec375eb68fab5d92e2c798f43798554c8133"
-        },
         "loguru": {
             "hashes": [
                 "sha256:70201d5fce26da89b7a5f168caa2bb674e06b969829f56737db1d6472e53e7c3",
@@ -40,6 +23,14 @@
             ],
             "index": "pypi",
             "version": "==0.5.1"
+        },
+        "piexif": {
+            "hashes": [
+                "sha256:3bc435d171720150b81b15d27e05e54b8abbde7b4242cddd81ef160d283108b6",
+                "sha256:83cb35c606bf3a1ea1a8f0a25cb42cf17e24353fd82e87ae3884e74a302a5f1b"
+            ],
+            "index": "pypi",
+            "version": "==1.1.3"
         },
         "pydantic": {
             "extras": [
