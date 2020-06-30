@@ -130,8 +130,10 @@ class TestGenerateExifData:
         await writer.generate_exif_timestamp()
 
         # assert
-        ts = writer._item.timestamps.exif[DEFAULT_EXIF_TIMESTAMP_ATTRIBUTE]
-        assert ts == analyzer._item.timestamps.file_name
+        actual = writer._item.timestamps.exif[DEFAULT_EXIF_TIMESTAMP_ATTRIBUTE]
+        expected = analyzer.item.timestamps.file_name
+
+        assert (actual.year, actual.month, actual.day) == (expected.year, expected.month, expected.day)
 
     async def test_write_exif_data(self, analyzer: WhatsappFileAnalyzer):
         # arrange
