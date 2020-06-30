@@ -30,6 +30,10 @@ class WhatsappFileAnalyzer:
     def item(self):
         return self._item
 
+    @property
+    def authoritative_timestamp_attribute(self):
+        return self.item.timestamps.file_name
+
     async def analyze_timestamp(self) -> None:
         logger.debug(f'[ ] Analyzing {self._item.file}')
 
@@ -92,7 +96,7 @@ class WhatsappFileAnalyzer:
                 for attr, val in timestamps_found.items()
             ]
             return timestamps_found
-        logger.warning(error_msg)
+        logger.info(error_msg)
         raise NoExifDataFoundError(error_msg)
 
 

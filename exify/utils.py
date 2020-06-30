@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 
 
@@ -11,3 +12,8 @@ def datetime_from_timestamp(ts):
 def utcnow() -> datetime:
     """Returns the current time (UTC)"""
     return datetime.utcnow()
+
+
+async def call_blocking(fn, *, loop=None):
+    loop = loop or asyncio.get_event_loop()
+    return await loop.run_in_executor(None, fn)

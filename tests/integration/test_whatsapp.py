@@ -1,32 +1,18 @@
-import shutil
-from datetime import datetime, timedelta
+from datetime import timedelta
 from pathlib import Path
 
 import pytest
 from loguru import logger
-from pydantic import BaseModel
 
-from exify.__main__ import _expand_to_absolute_path
-from exify.writer.whatsapp_writer import WhatsappTimestampWriter
+from exify.__main__ import expand_to_absolute_path
+from exify.writer.whatsapp_exif_writer import WhatsappExifWriter
 from exify.constants import DEFAULT_EXIF_TIMESTAMP_ATTRIBUTE
 from exify.analyzer.whatsapp_analyzer import WhatsappFileAnalyzer
 from exify.models import FileItem, ExifTimestampAttribute, Timestamps, AnalysisResults
-from exify.utils import datetime_from_timestamp, utcnow
-
-EXAMPLES_DIR = Path('data')
-
-
-class Examples(BaseModel):
-    no_exif: Path = EXAMPLES_DIR / 'IMG-20140430-WA0004.jpg'
-
-
-class FakeItem(FileItem):
-    file: Path = Path()
-
-
-@pytest.fixture
-def examples():
-    return Examples()
+from exify.utils import utcnow
+from tests import assertions
+from tests.assertions import generated_timestamp_matches_file_name_timestamp
+from tests.integration.conftest import Examples
 
 
 @pytest.mark.asyncio
@@ -34,7 +20,7 @@ class TestAnalyze:
     async def test_no_exif_found(self, examples):
         # arrange
         item = FileItem(
-            file=_expand_to_absolute_path(examples.no_exif)
+            file=expand_to_absolute_path(examples.no_exif)
         )
         analyzer = WhatsappFileAnalyzer(item)
 
@@ -95,7 +81,7 @@ class TestCheckDeviations:
 class TestGenerateExifData:
     @pytest.fixture
     def test_file(self):
-        return _expand_to_absolute_path(Examples().no_exif)
+        return expand_to_absolute_path(Examples().no_exif)
 
     @pytest.fixture
     def test_path(self, tmp_path):
@@ -116,33 +102,28 @@ class TestGenerateExifData:
         )
 
     @pytest.fixture
-    async def analyzer(self, item):
+    async def analyzer(self, item) -> WhatsappFileAnalyzer:
         analyzer = WhatsappFileAnalyzer(item)
         await analyzer.analyze_timestamp()
         return analyzer
 
     async def test_generate_exif_data(self, analyzer: WhatsappFileAnalyzer):
         # arrange
-        writer = WhatsappTimestampWriter(analyzer._item)
+        writer = WhatsappExifWriter(analyzer._item)
         assert not writer._item.timestamps.exif
 
         # act
-        await writer.generate_exif_timestamp()
+        await writer.generate_timestamp()
 
         # assert
-        actual = writer._item.timestamps.exif[DEFAULT_EXIF_TIMESTAMP_ATTRIBUTE]
-        expected = analyzer.item.timestamps.file_name
-
-        assert (actual.year, actual.month, actual.day) == (expected.year, expected.month, expected.day)
+        await assertions.generated_timestamp_matches_file_name_timestamp(analyzer, writer)
 
     async def test_write_exif_data(self, analyzer: WhatsappFileAnalyzer):
         # arrange
-        writer = WhatsappTimestampWriter(analyzer._item, adapter=analyzer._adapter)
+        writer = WhatsappExifWriter(analyzer._item, adapter=analyzer._adapter)
 
         # act
-        await writer.write_exif_data()
+        await writer.write()
 
         # assert
-        analyzer = WhatsappFileAnalyzer(item=writer._item)
-        await analyzer.gather_timestamp_data()
-        assert analyzer._item.timestamps.exif[DEFAULT_EXIF_TIMESTAMP_ATTRIBUTE]
+        await assertions.file_timestamp_matches_generated_timestamp(analyzer, writer)

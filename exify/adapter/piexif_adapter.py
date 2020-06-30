@@ -1,9 +1,11 @@
-import asyncio
 from collections import defaultdict
+from functools import partial
 from pathlib import Path
 from typing import Optional, Dict
 
 import piexif
+
+from exify.utils import call_blocking
 
 TIMESTAMP_TYPE = bytes
 
@@ -22,7 +24,6 @@ class PiexifAdapter:
     def __init__(self, file_name: Path = None):
         self._file_name: Path = file_name
         self._raw: Optional[Dict] = defaultdict(None)
-        self._loop = asyncio.get_event_loop()
 
     @property
     def file_name(self):
@@ -41,7 +42,7 @@ class PiexifAdapter:
     async def get_exif_data(self):
         look_for = ATTRIBUTE_TO_TAG_MAP.keys()
         if filename := self.file_name:
-            self._raw = await self._loop.run_in_executor(None, self._load_image)
+            self._raw = await call_blocking(partial(self._load_image))
 
             decoded = defaultdict(str)
             for ifd in ("0th", "Exif", "GPS", "1st"):
@@ -67,6 +68,6 @@ class PiexifAdapter:
                 self._raw[raw_block][raw_attr] = str(val).encode('ascii')
 
             exif_bytes = piexif.dump(self._raw)
-            await self._loop.run_in_executor(None, self._write_image, exif_bytes)
+            await call_blocking(partial(self._write_image, exif_bytes))
         else:
             raise ValueError('file_name has not been set')
