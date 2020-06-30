@@ -1,2 +1,9 @@
-class NoExifDataFoundError(Exception):
+"""Errors"""
+
+
+class ExifyError(Exception):
+    """ExifyError"""
+
+
+class NoExifDataFoundError(ExifyError):
     """NoExifDataFoundError"""

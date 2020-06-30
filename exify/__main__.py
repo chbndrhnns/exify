@@ -1,11 +1,9 @@
 import asyncio
-from collections import defaultdict
-from pathlib import Path
-from typing import List, MutableMapping
 
 from loguru import logger
 
 from exify.analyzer.whatsapp_analyzer import WhatsappFileAnalyzer
+from exify.errors import ExifyError
 from exify.models import ExifySettings, FileItem
 from exify.settings import get_settings
 from exify.writer.whatsapp_writer import WhatsappTimestampWriter
@@ -18,44 +16,51 @@ def _expand_to_absolute_path(file):
 
 
 async def run(settings: ExifySettings):
-    src = settings.base_dir
-    logger.info(f'Running on {src}...')
-    logger.info(settings)
+    logger.info(f'Settings: {settings}')
 
-    if files := [x for x in src.iterdir() if x.is_file()]:
-        results = await analyze_files(files, settings)
-        not_ok = await analyze_results(results)
-
-    for item in not_ok:
-        await WhatsappTimestampWriter(item).write_exif_data()
-
-
-async def analyze_results(items: MutableMapping[Path, FileItem]) -> List[FileItem]:
     ok = []
-    not_ok = []
-    for item in items.values():
-        if not item.results.exif_timestamp_exists:
-            not_ok.append(item)
-        else:
-            ok.append(item)
+    updated = []
+    errors = []
 
-    logger.info(f'OK: {len(ok)}')
-    logger.info(f'NOT OK: {len(not_ok)}')
-    return not_ok
-
-
-async def analyze_files(files, settings):
-    results = defaultdict(FileItem)
-    for filename in files:
-        filename = _expand_to_absolute_path(filename)
+    for file in await _find_files(settings.base_dir):
+        filename = _expand_to_absolute_path(file)
         item = FileItem(
             file=filename
         )
-        results[filename] = item
 
-        await WhatsappFileAnalyzer(item, settings=settings).analyze_timestamp()
-        logger.info(f'{filename}: {item.results}')
-    return results
+        try:
+            item = await _analyze_file(item, settings)
+        except ExifyError as err:
+            item.errors.append(err)
+            errors.append(item)
+        if item.results.exif_timestamp_exists:
+            ok.append(item)
+        else:
+            try:
+                await _write_exif_data(item)
+                updated.append(item)
+            except ExifyError as err:
+                item.errors.append(err)
+                errors.append(item)
+
+    logger.info(f'OK: {len(ok)}, UPDATED: {len(updated)}, ERRORS: {len(errors)}')
+
+    for failed in errors:
+        logger.info(f'Process failed for {failed.file}: {failed.errors}')
+
+
+async def _find_files(src):
+    return [x for x in src.iterdir() if x.is_file()]
+
+
+async def _write_exif_data(item):
+    await WhatsappTimestampWriter(item).write_exif_data()
+
+
+async def _analyze_file(item: FileItem, settings: ExifySettings):
+    await WhatsappFileAnalyzer(item, settings=settings).analyze_timestamp()
+    logger.info(f'{item.file}: {item.results}')
+    return item
 
 
 if __name__ == '__main__':

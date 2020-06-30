@@ -7,11 +7,13 @@ from typing import Union, Optional, MutableMapping, List
 from pydantic import BaseModel, BaseSettings, Field, root_validator, Extra
 
 from exify import PROJECT_ROOT
+from exify.errors import ExifyError
 
 
 class ExifyBaseModel(BaseModel):
     class Config:
         extra = Extra.forbid
+        arbitrary_types_allowed = True
 
 
 class ExifTimezoneAttribute(str, Enum):
@@ -96,3 +98,4 @@ class FileItem(ExifyBaseModel):
     file: Path
     timestamps: Timestamps = Timestamps()
     results: AnalysisResults = AnalysisResults()
+    errors: List[ExifyError] = []
