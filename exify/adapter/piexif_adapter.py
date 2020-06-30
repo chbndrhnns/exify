@@ -39,16 +39,19 @@ class PiexifAdapter:
         piexif.insert(exif_bytes, str(self.file_name))
 
     async def get_exif_data(self):
+        look_for = ATTRIBUTE_TO_TAG_MAP.keys()
         if filename := self.file_name:
             self._raw = await self._loop.run_in_executor(None, self._load_image)
 
             decoded = defaultdict(str)
             for ifd in ("0th", "Exif", "GPS", "1st"):
                 for tag in self._raw[ifd]:
-                    raw = self._raw[ifd][tag]
-                    if isinstance(raw, bytes):
-                        raw = raw.decode('ascii')
-                    decoded[piexif.TAGS[ifd][tag]["name"]] = raw
+                    tag_name = piexif.TAGS[ifd][tag]["name"]
+                    if tag_name in look_for:
+                        raw = self._raw[ifd][tag]
+                        if isinstance(raw, bytes):
+                            raw = raw.decode('ascii')
+                        decoded[tag_name] = raw
             return decoded
         raise ValueError('file_name has not been set')
 
