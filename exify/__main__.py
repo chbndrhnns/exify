@@ -4,8 +4,8 @@ from loguru import logger
 
 from exify.analyzer.whatsapp_analyzer import WhatsappFileAnalyzer
 from exify.errors import ExifyError
-from exify.models import ExifySettings, FileItem
-from exify.settings import get_settings
+from exify.models import FileItem
+from exify.settings import get_settings, ExifySettings
 from exify.writer.whatsapp_writer import WhatsappTimestampWriter
 
 
