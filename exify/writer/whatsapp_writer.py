@@ -17,7 +17,7 @@ class WhatsappTimestampWriter:
         self._adapter = adapter or PiexifAdapter(file_name=self._item.file)
 
     async def write_exif_data(self):
-        logger.info(f'{self._item.file}: Updating EXIF data...')
+        logger.debug(f'{self._item.file}: Updating EXIF data...')
         if not any([self._item.timestamps.exif.values()]):
             await self.generate_exif_timestamp()
 
@@ -32,7 +32,7 @@ class WhatsappTimestampWriter:
         ts = self._item.timestamps.file_name
         ts = ts.replace(hour=10, minute=30)
         self._item.timestamps.exif[DEFAULT_EXIF_TIMESTAMP_ATTRIBUTE] = ts
-        logger.debug(f'Setting {ExifTimestampAttribute.datetime} to "{ts}"')
+        logger.info(f'Using timestamp from file name: Setting {ExifTimestampAttribute.datetime} to "{ts}"')
 
 
 def _format_datetime_for_exif(timestamp: datetime) -> str:

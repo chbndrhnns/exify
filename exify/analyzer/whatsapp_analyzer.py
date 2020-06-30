@@ -31,15 +31,13 @@ class WhatsappFileAnalyzer:
         return self._item
 
     async def analyze_timestamp(self) -> None:
-        logger.info(f'[ ] Analyzing {self._item.file}')
+        logger.debug(f'[ ] Analyzing {self._item.file}')
 
         await self.gather_timestamp_data()
         if self.deviation_is_ok():
             self.item.results.deviation_ok = True
         if self.item.timestamps.exif:
             self.item.results.exif_timestamp_exists = True
-
-        logger.info(f'[X] Analyzing {self._item.file}')
 
     async def gather_timestamp_data(self):
         try:
