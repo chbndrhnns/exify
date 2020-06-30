@@ -21,7 +21,7 @@ ATTRIBUTE_TO_TAG_MAP = {
 class PiexifAdapter:
     def __init__(self, file_name: Path = None):
         self._file_name: Path = file_name
-        self._raw: Optional[Dict] = {}
+        self._raw: Optional[Dict] = defaultdict(None)
         self._loop = asyncio.get_event_loop()
 
     @property
@@ -62,11 +62,10 @@ class PiexifAdapter:
                 raw_block = config['block']
                 raw_attr = config['attribute']
 
-                self._raw[raw_block].update(
-                    {
-                        raw_attr: str(val).encode('ascii')
-                    }
-                )
+                if not self._raw.get(raw_block):
+                    self._raw[raw_block] = defaultdict(None)
+                self._raw[raw_block][raw_attr] = str(val).encode('ascii')
+
             exif_bytes = piexif.dump(self._raw)
             await self._loop.run_in_executor(None, self._write_image, exif_bytes)
         else:
