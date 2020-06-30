@@ -89,6 +89,7 @@ class Timestamps(ExifyBaseModel):
 
 class AnalysisResults(ExifyBaseModel):
     deviation_ok: bool = False
+    exif_timestamp_exists: bool = False
 
 
 class FileItem(ExifyBaseModel):
