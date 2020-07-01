@@ -17,6 +17,16 @@ def expand_to_absolute_path(file):
     return file.absolute()
 
 
+def is_whatsapp_file(filename):
+    if 'WA' not in filename.name:
+        return False
+
+
+def is_image(filename):
+    if filename.suffix.lower() not in ('.jpg', '.jpeg'):
+        return False
+
+
 async def run(settings: ExifySettings):
     logger.info(f'Settings: {settings}')
 
@@ -26,6 +36,10 @@ async def run(settings: ExifySettings):
 
     for file in await _find_files(settings.base_dir):
         filename = expand_to_absolute_path(file)
+
+        if not is_whatsapp_file(filename) or not is_image(filename):
+            continue
+
         item = FileItem(
             file=filename
         )
@@ -59,7 +73,9 @@ async def _all_ok(item_results):
 
 
 async def _find_files(src):
-    return [x for x in src.iterdir() if x.is_file()]
+    # files = [x for x in src.iterdir() if x.is_file()]
+    files = [x for x in src.rglob('*') if x.is_file()]
+    return files
 
 
 async def _write_exif_data(item):
