@@ -7,10 +7,11 @@ from exify.models import FileItem
 from tests.conftest import TESTS_ROOT
 
 EXAMPLES_DIR = Path('data')
+WHATSAPP_DIR = EXAMPLES_DIR / 'whatsapp'
 
 
-class Examples(BaseModel):
-    no_exif: Path = EXAMPLES_DIR / 'IMG-20140430-WA0004.jpg'
+class WhatsappExamples(BaseModel):
+    no_exif: Path = WHATSAPP_DIR / 'IMG-20140430-WA0004.jpg'
 
 
 class FakeItem(FileItem):
@@ -32,4 +33,4 @@ def env(monkeypatch_session):
 
 @pytest.fixture
 def examples():
-    return Examples()
+    return WhatsappExamples()

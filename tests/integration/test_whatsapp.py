@@ -12,7 +12,7 @@ from exify.models import FileItem, ExifTimestampAttribute, Timestamps, AnalysisR
 from exify.utils import utcnow
 from tests import assertions
 from tests.assertions import generated_timestamp_matches_file_name_timestamp
-from tests.integration.conftest import Examples
+from tests.integration.conftest import WhatsappExamples
 
 
 @pytest.mark.asyncio
@@ -81,7 +81,7 @@ class TestCheckDeviations:
 class TestGenerateExifData:
     @pytest.fixture
     def test_file(self):
-        return expand_to_absolute_path(Examples().no_exif)
+        return expand_to_absolute_path(WhatsappExamples().no_exif)
 
     @pytest.fixture
     def test_path(self, tmp_path):

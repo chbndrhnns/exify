@@ -6,14 +6,14 @@ from exify.analyzer.whatsapp_analyzer import WhatsappFileAnalyzer
 from exify.models import FileItem
 from exify.writer.file_metadata_writer import FileTimestampWriter
 from tests import assertions
-from tests.integration.conftest import Examples
+from tests.integration.conftest import WhatsappExamples
 
 
 @pytest.mark.asyncio
 class TestGenerateExifData:
     @pytest.fixture
     def test_file(self):
-        return expand_to_absolute_path(Examples().no_exif)
+        return expand_to_absolute_path(WhatsappExamples().no_exif)
 
     @pytest.fixture
     def test_path(self, tmp_path):
