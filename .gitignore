@@ -3,3 +3,5 @@
 **/.pytest_cache
 photos/*
 src/*
+**/__pycache__/**
+.DS_Store
