@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "802416392cf658236f610afcfe5ebd44505b6b4f8e01c17863f880f4cfa189e0"
+            "sha256": "29a78c5f903b6fd87ae332b810b5097d4fa733c8fad243b9a5b897031b9d8aca"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -23,6 +23,21 @@
             ],
             "index": "pypi",
             "version": "==0.5.0"
+        },
+        "click": {
+            "hashes": [
+                "sha256:d2b5255c7c6349bc1bd1e59e08cd12acbbd63ce649f2588755783aa94dfb6b1a",
+                "sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
+            "version": "==7.1.2"
+        },
+        "colorama": {
+            "hashes": [
+                "sha256:7d73d2a99753107a36ac6b455ee49046802e59d9d076ef8e47b61499fa29afff",
+                "sha256:e96da0d330793e2cb9485e9ddfd918d456036c7149416295932478192f4436a1"
+            ],
+            "version": "==0.4.3"
         },
         "imagehash": {
             "hashes": [
@@ -193,6 +208,13 @@
             "markers": "python_version >= '3.6'",
             "version": "==1.5.0"
         },
+        "shellingham": {
+            "hashes": [
+                "sha256:576c1982bea0ba82fb46c36feb951319d7f42214a82634233f58b40d858a751e",
+                "sha256:7f6206ae169dc1a03af8a138681b3f962ae61cc93ade84d0585cca3aaf770044"
+            ],
+            "version": "==1.3.2"
+        },
         "six": {
             "hashes": [
                 "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259",
@@ -200,6 +222,17 @@
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==1.15.0"
+        },
+        "typer": {
+            "extras": [
+                "all"
+            ],
+            "hashes": [
+                "sha256:a2a7b4b6388debc2b7160c8b7a54368df85b56c3f1447846bad630e99d629ffc",
+                "sha256:f025d6bbb2fcefaf861dec5a006e9b5128532f733b7f75b57b1fd803bed31cdd"
+            ],
+            "index": "pypi",
+            "version": "==0.3.0"
         }
     },
     "develop": {
