@@ -2,7 +2,7 @@ import asyncio
 
 from loguru import logger
 
-from exify.analyzer.timestamp_analyzer import TimestampAnalyzer
+from exify.analyzer.image_analyzer import WhatsappImageAnalyzer
 from exify.errors import ExifyError
 from exify.models import FileItem
 from exify.settings import get_settings, ExifySettings, configure_logging
@@ -73,7 +73,6 @@ async def _all_ok(item_results):
 
 
 async def _find_files(src):
-    # files = [x for x in src.iterdir() if x.is_file()]
     files = [x for x in src.rglob('*') if x.is_file()]
     return files
 
@@ -87,7 +86,7 @@ async def _write_file_time_stamp(item):
 
 
 async def _analyze_file(item: FileItem, settings: ExifySettings):
-    await TimestampAnalyzer(item, settings=settings).analyze_timestamp()
+    await WhatsappImageAnalyzer(item, settings=settings).get_timestamp()
     logger.debug(f'{item.file}: {item.results}')
     return item
 

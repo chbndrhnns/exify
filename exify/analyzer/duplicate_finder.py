@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import Type
 
 from loguru import logger
@@ -12,14 +13,14 @@ class DuplicateFinder(MultipleFilesAnalyzer):
         self._adapter = adapter
 
         self._duplicates = {}
-        self._images_by_hash = {}
+        self._images_by_hash = defaultdict(list)
 
     async def run(self):
         """Run the search for duplicates"""
 
         for img in sorted([item.file for item in self.items]):
-            hash = await self._adapter(file_name=img).calculate_hash()
+            img_hash = await self._adapter(file_name=img).calculate_hash()
 
-            if hash in self._images_by_hash:
-                logger.info(f'{img} already exists as {self._images_by_hash[hash]}')
-            self._images_by_hash[hash] = self._images_by_hash.get(hash, []) + [img]
+            if img_hash in self._images_by_hash:
+                logger.info(f'{img} already exists as {self._images_by_hash[img_hash]}')
+            self._images_by_hash[img_hash].append(img)

@@ -2,7 +2,7 @@ import pytest
 from loguru import logger
 
 from exify.__main__ import expand_to_absolute_path
-from exify.analyzer.timestamp_analyzer import TimestampAnalyzer
+from exify.analyzer.image_analyzer import WhatsappImageAnalyzer
 from exify.models import FileItem
 from exify.writer.exif_timestamp_writer import ExifTimestampWriter
 from tests import assertions
@@ -34,12 +34,12 @@ class TestGenerateExifData:
         )
 
     @pytest.fixture
-    async def analyzer(self, item) -> TimestampAnalyzer:
-        analyzer = TimestampAnalyzer(item)
-        await analyzer.analyze_timestamp()
+    async def analyzer(self, item) -> WhatsappImageAnalyzer:
+        analyzer = WhatsappImageAnalyzer(item)
+        await analyzer.get_timestamp()
         return analyzer
 
-    async def test_generate_exif_data(self, analyzer: TimestampAnalyzer):
+    async def test_generate_exif_data(self, analyzer: WhatsappImageAnalyzer):
         # arrange
         writer = ExifTimestampWriter(analyzer._item)
         assert not writer._item.timestamps.exif
@@ -50,7 +50,7 @@ class TestGenerateExifData:
         # assert
         await assertions.generated_timestamp_matches_file_name_timestamp(analyzer, writer)
 
-    async def test_write_exif_data(self, analyzer: TimestampAnalyzer):
+    async def test_write_exif_data(self, analyzer: WhatsappImageAnalyzer):
         # arrange
         writer = ExifTimestampWriter(analyzer._item, adapter=analyzer._adapter)
 

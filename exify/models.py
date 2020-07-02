@@ -36,6 +36,11 @@ class ExifTimestampAttribute(str, Enum):
         return list(map(lambda a: a.value, ExifTimestampAttribute))
 
 
+class ExifDimensions(ExifyBaseModel):
+    width: Optional[int]
+    height: Optional[int]
+
+
 class WindowsFileAttribute(str, Enum):
     created = 'st_ctime'
     modified = 'st_mtime'
@@ -61,9 +66,7 @@ class Timestamps(ExifyBaseModel):
     file_name: Optional[datetime]
     file_created: Optional[datetime]
     file_modified: Optional[datetime]
-    exif: Optional[MutableMapping[Union[ExifTimestampAttribute, ExifTimezoneAttribute], datetime]] = {
-
-    }
+    exif: Optional[MutableMapping[Union[ExifTimestampAttribute, ExifTimezoneAttribute], datetime]] = {}
 
 
 class AnalysisResults(ExifyBaseModel):
@@ -74,5 +77,7 @@ class AnalysisResults(ExifyBaseModel):
 class FileItem(ExifyBaseModel):
     file: Path
     timestamps: Timestamps = Timestamps()
+    dimensions: ExifDimensions = ExifDimensions()
     results: AnalysisResults = AnalysisResults()
+    size: Optional[int]
     errors: List[ExifyError] = []

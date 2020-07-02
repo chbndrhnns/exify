@@ -1,9 +1,10 @@
+"""WhatsApp image analyzer"""
 import re
 from collections import OrderedDict, defaultdict
 from datetime import timedelta, datetime
 from enum import Enum
 from operator import itemgetter
-from typing import Optional, MutableMapping
+from typing import Optional, MutableMapping, List
 
 from loguru import logger
 
@@ -14,19 +15,31 @@ from exify.adapter.piexif_adapter import PiexifAdapter
 from exify.models import FileItem, Timestamps, ExifTimestampAttribute
 
 
-class TimestampAnalyzer(SingleFileAnalyzer):
+class WhatsappImageAnalyzer(SingleFileAnalyzer):
     FILENAME_PATTERN = r'\d{8}'
     FILENAME_DATE_FORMAT = '%Y%m%d'
 
-    def __init__(self, item: FileItem, *, settings=None, adapter: Optional[PiexifAdapter] = None):
-        super().__init__(item, settings=settings, adapter=adapter)
+    def __init__(self, item: FileItem,
+                 *,
+                 settings=None,
+                 tasks: List = None,
+                 adapter: Optional[PiexifAdapter] = None):
+        super().__init__(item, tasks=tasks, settings=settings, adapter=adapter)
         self._adapter = adapter or PiexifAdapter(file_name=self._item.file)
+        self._tasks = tasks or [
+            self.get_size,
+            self.get_dimensions,
+            self.get_timestamp,
+        ]
 
     @property
     def authoritative_timestamp_attribute(self):
         return self.item.timestamps.file_name
 
-    async def analyze_timestamp(self) -> None:
+    async def get_size(self):
+        self.item.size = self.item.file.stat().st_size
+
+    async def get_timestamp(self) -> None:
         logger.debug(f'[ ] Analyzing {self._item.file}')
 
         await self.gather_timestamp_data()
@@ -34,6 +47,11 @@ class TimestampAnalyzer(SingleFileAnalyzer):
             self.item.results.deviation_ok = True
         if self.item.timestamps.exif:
             self.item.results.exif_timestamp_exists = True
+
+    async def get_dimensions(self) -> None:
+        data = await self._adapter.get_exif_data()
+        self.item.dimensions.width = data['ImageWidth']
+        self.item.dimensions.height = data['ImageLength']
 
     async def gather_timestamp_data(self):
         try:

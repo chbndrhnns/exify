@@ -18,6 +18,8 @@ ATTRIBUTE_TO_TAG_MAP = {
     'OffsetTime': {'block': 'Exif', 'attribute': piexif.ExifIFD.OffsetTime},
     'OffsetTimeOriginal': {'block': 'Exif', 'attribute': piexif.ExifIFD.OffsetTimeOriginal},
     'OffsetTimeDigitized': {'block': 'Exif', 'attribute': piexif.ExifIFD.OffsetTimeDigitized},
+    'ImageWidth': {'block': 'Image', 'attribute': piexif.ImageIFD.ImageWidth},
+    'ImageLength': {'block': 'Image', 'attribute': piexif.ImageIFD.ImageLength},
 }
 
 
@@ -25,6 +27,7 @@ class PiexifAdapter(BaseAdapter):
     def __init__(self, file_name: Path = None):
         super().__init__(file_name)
         self._raw: Optional[Dict] = defaultdict(None)
+        self._data = defaultdict(str)
 
     @property
     def file_name(self):
@@ -41,11 +44,13 @@ class PiexifAdapter(BaseAdapter):
         piexif.insert(exif_bytes, str(self.file_name))
 
     async def get_exif_data(self):
+        if self._data:
+            return self._data
+
         look_for = ATTRIBUTE_TO_TAG_MAP.keys()
         if filename := self.file_name:
             self._raw = await call_blocking(partial(self._load_image))
 
-            decoded = defaultdict(str)
             for ifd in ("0th", "Exif", "GPS", "1st"):
                 for tag in self._raw[ifd]:
                     tag_name = piexif.TAGS[ifd][tag]["name"]
@@ -53,8 +58,8 @@ class PiexifAdapter(BaseAdapter):
                         raw = self._raw[ifd][tag]
                         if isinstance(raw, bytes):
                             raw = raw.decode('ascii')
-                        decoded[tag_name] = raw
-            return decoded
+                        self._data[tag_name] = raw
+            return self._data
         raise ValueError('file_name has not been set')
 
     async def update_exif_data(self, data):

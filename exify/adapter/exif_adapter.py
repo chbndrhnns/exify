@@ -33,7 +33,7 @@ class ExifAdapter(BaseAdapter):
         raise ValueError('filename needs to be set first')
 
     async def update_exif_data(self, data):
-        for attr, val in data.items():
+        for attr, val in data.three_duplicates():
             setattr(self.image, attr, val)
 
     async def write_file(self) -> None:

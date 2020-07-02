@@ -1,8 +1,7 @@
 import functools
-from collections import Callable
 from pathlib import Path
+from typing import Callable
 
-import aiofiles
 import imagehash
 from PIL import Image
 

@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from exify.__main__ import expand_to_absolute_path
-from exify.analyzer.timestamp_analyzer import TimestampAnalyzer
+from exify.analyzer.image_analyzer import WhatsappImageAnalyzer
 from exify.models import FileItem, ExifTimestampAttribute, Timestamps, AnalysisResults
 from exify.utils import utcnow
 
@@ -16,10 +16,10 @@ class TestAnalyze:
         item = FileItem(
             file=expand_to_absolute_path(examples.no_exif)
         )
-        analyzer = TimestampAnalyzer(item)
+        analyzer = WhatsappImageAnalyzer(item)
 
         # act
-        await analyzer.analyze_timestamp()
+        await analyzer.get_timestamp()
 
         # assert
         assert not analyzer._item.timestamps.exif
@@ -58,14 +58,14 @@ class TestCheckDeviations:
 
     async def test_deviation_ok(self, acceptable_deviations):
         # arrange
-        analyzer = TimestampAnalyzer(acceptable_deviations)
+        analyzer = WhatsappImageAnalyzer(acceptable_deviations)
 
         # act
         assert analyzer.deviation_is_ok()
 
     async def test_deviation_not_ok(self, too_much_deviations):
         # arrange
-        analyzer = TimestampAnalyzer(too_much_deviations)
+        analyzer = WhatsappImageAnalyzer(too_much_deviations)
 
         # act
         assert not analyzer.deviation_is_ok(max_deviation=timedelta(seconds=2))
