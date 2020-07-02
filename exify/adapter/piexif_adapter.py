@@ -5,6 +5,7 @@ from typing import Optional, Dict
 
 import piexif
 
+from exify.adapter._base import BaseAdapter
 from exify.utils import call_blocking
 
 TIMESTAMP_TYPE = bytes
@@ -20,9 +21,9 @@ ATTRIBUTE_TO_TAG_MAP = {
 }
 
 
-class PiexifAdapter:
+class PiexifAdapter(BaseAdapter):
     def __init__(self, file_name: Path = None):
-        self._file_name: Path = file_name
+        super().__init__(file_name)
         self._raw: Optional[Dict] = defaultdict(None)
 
     @property

@@ -12,6 +12,7 @@ pytest-mock = "*"
 loguru = "*"
 pydantic = {extras = ["dotenv"], version = "*"}
 piexif = "*"
+imagehash = "*"
 
 [requires]
 python_version = "3.8"

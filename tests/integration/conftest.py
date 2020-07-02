@@ -8,6 +8,7 @@ from tests.conftest import TESTS_ROOT
 
 EXAMPLES_DIR = Path('data')
 WHATSAPP_DIR = EXAMPLES_DIR / 'whatsapp'
+DUPLICATES_DIR = EXAMPLES_DIR / 'duplicates'
 
 
 class WhatsappExamples(BaseModel):

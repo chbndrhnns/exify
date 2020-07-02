@@ -4,10 +4,12 @@ from typing import Optional
 import aiofiles
 from exif import Image
 
+from exify.adapter._base import BaseAdapter
 
-class ExifAdapter:
-    def __init__(self, filename: Path = None):
-        self._file_name: Path = filename
+
+class ExifAdapter(BaseAdapter):
+    def __init__(self, file_name: Path):
+        super().__init__(file_name)
         self._image: Optional[Image] = None
 
     @property

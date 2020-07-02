@@ -2,12 +2,12 @@ import asyncio
 
 from loguru import logger
 
-from exify.analyzer.whatsapp_analyzer import WhatsappFileAnalyzer
+from exify.analyzer.timestamp_analyzer import TimestampAnalyzer
 from exify.errors import ExifyError
 from exify.models import FileItem
 from exify.settings import get_settings, ExifySettings, configure_logging
 from exify.writer.file_metadata_writer import FileTimestampWriter
-from exify.writer.whatsapp_exif_writer import WhatsappExifWriter
+from exify.writer.exif_timestamp_writer import ExifTimestampWriter
 
 
 def expand_to_absolute_path(file):
@@ -79,7 +79,7 @@ async def _find_files(src):
 
 
 async def _write_exif_data(item):
-    await WhatsappExifWriter(item).write()
+    await ExifTimestampWriter(item).write()
 
 
 async def _write_file_time_stamp(item):
@@ -87,7 +87,7 @@ async def _write_file_time_stamp(item):
 
 
 async def _analyze_file(item: FileItem, settings: ExifySettings):
-    await WhatsappFileAnalyzer(item, settings=settings).analyze_timestamp()
+    await TimestampAnalyzer(item, settings=settings).analyze_timestamp()
     logger.debug(f'{item.file}: {item.results}')
     return item
 

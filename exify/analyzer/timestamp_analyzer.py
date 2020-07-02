@@ -7,28 +7,20 @@ from typing import Optional, MutableMapping
 
 from loguru import logger
 
+from exify.analyzer._base import BaseAnalyzer
 from exify.errors import NoExifDataFoundError
-from exify.settings import get_settings
 from exify.constants import EXIF_TIMESTAMP_FORMAT, ACCEPTABLE_TIME_DELTA
 from exify.adapter.piexif_adapter import PiexifAdapter
 from exify.models import FileItem, Timestamps, ExifTimestampAttribute
 
 
-class WhatsappFileAnalyzer:
+class TimestampAnalyzer(BaseAnalyzer):
     FILENAME_PATTERN = r'\d{8}'
     FILENAME_DATE_FORMAT = '%Y%m%d'
 
     def __init__(self, item: FileItem, *, settings=None, adapter: Optional[PiexifAdapter] = None):
-        self._settings = settings or get_settings()
-
-        if not isinstance(item, FileItem):
-            raise ValueError('item must be of type FileItem')
-        self._item: FileItem = item
+        super().__init__(item, settings=settings, adapter=adapter)
         self._adapter = adapter or PiexifAdapter(file_name=self._item.file)
-
-    @property
-    def item(self):
-        return self._item
 
     @property
     def authoritative_timestamp_attribute(self):

@@ -9,7 +9,7 @@ from exify.writer._base import BaseWriter
 from exify.writer.utils import create_timestamp_from_exif_attribute, _format_datetime_for_exif
 
 
-class WhatsappExifWriter(BaseWriter):
+class ExifTimestampWriter(BaseWriter):
 
     def __init__(self, item: FileItem, *, settings=None, adapter: Optional[PiexifAdapter] = None):
         super().__init__(item, settings=settings, adapter=adapter)
