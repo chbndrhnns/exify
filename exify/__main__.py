@@ -18,13 +18,11 @@ def expand_to_absolute_path(file):
 
 
 def is_whatsapp_file(filename):
-    if 'WA' not in filename.name:
-        return False
+    return 'WA' in filename.name
 
 
 def is_image(filename):
-    if filename.suffix.lower() not in ('.jpg', '.jpeg'):
-        return False
+    return filename.suffix.lower() in ('.jpg', '.jpeg')
 
 
 async def run(settings: ExifySettings):
@@ -86,7 +84,7 @@ async def _write_file_time_stamp(item):
 
 
 async def _analyze_file(item: FileItem, settings: ExifySettings):
-    await WhatsappImageAnalyzer(item, settings=settings).get_timestamp()
+    await WhatsappImageAnalyzer(item, settings=settings).run()
     logger.debug(f'{item.file}: {item.results}')
     return item
 

@@ -19,18 +19,23 @@ class WhatsappImageAnalyzer(SingleFileAnalyzer):
     FILENAME_PATTERN = r'\d{8}'
     FILENAME_DATE_FORMAT = '%Y%m%d'
 
-    def __init__(self, item: FileItem,
-                 *,
-                 settings=None,
-                 tasks: List = None,
-                 adapter: Optional[PiexifAdapter] = None):
-        super().__init__(item, tasks=tasks, settings=settings, adapter=adapter)
-        self._adapter = adapter or PiexifAdapter(file_name=self._item.file)
-        self._tasks = tasks or [
-            self.get_size,
-            self.get_dimensions,
-            self.get_timestamp,
+    @classmethod
+    async def create(
+            cls,
+            item: FileItem,
+            *,
+            settings=None,
+            tasks: List = None,
+            adapter: Optional[PiexifAdapter] = None
+    ):
+        instance = await super().create(item, tasks=tasks, settings=settings)
+        instance._adapter = adapter or PiexifAdapter(file_name=instance.item.file)
+        instance._tasks = tasks or [
+            await instance.get_size(),
+            await instance.get_dimensions(),
+            await instance.get_timestamp(),
         ]
+        return instance
 
     @property
     def authoritative_timestamp_attribute(self):

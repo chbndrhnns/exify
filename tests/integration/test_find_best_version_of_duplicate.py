@@ -53,7 +53,7 @@ def two_duplicates_same_size():
 @pytest.mark.asyncio
 class TestSelectFileByExifDimensions:
     async def test_image_with_biggest_dimensions_is_selected(self, three_duplicates):
-        analyzers = [WhatsappImageAnalyzer(item) for item in three_duplicates]
+        analyzers = [await WhatsappImageAnalyzer.create(item) for item in three_duplicates]
         [await a.get_dimensions() for a in analyzers]
 
         assert all([instance.item.dimensions for instance in analyzers])

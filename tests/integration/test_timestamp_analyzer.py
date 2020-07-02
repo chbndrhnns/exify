@@ -16,7 +16,7 @@ class TestAnalyze:
         item = FileItem(
             file=expand_to_absolute_path(examples.no_exif)
         )
-        analyzer = WhatsappImageAnalyzer(item)
+        analyzer = await WhatsappImageAnalyzer.create(item)
 
         # act
         await analyzer.get_timestamp()

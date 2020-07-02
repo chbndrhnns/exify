@@ -35,7 +35,7 @@ class TestGenerateExifData:
 
     @pytest.fixture
     async def analyzer(self, item):
-        analyzer = WhatsappImageAnalyzer(item)
+        analyzer = await WhatsappImageAnalyzer.create(item)
         await analyzer.get_timestamp()
         return analyzer
 
