@@ -7,14 +7,14 @@ from typing import Optional, MutableMapping
 
 from loguru import logger
 
-from exify.analyzer._base import BaseAnalyzer
+from exify.analyzer._base import SingleFileAnalyzer
 from exify.errors import NoExifDataFoundError
 from exify.constants import EXIF_TIMESTAMP_FORMAT, ACCEPTABLE_TIME_DELTA
 from exify.adapter.piexif_adapter import PiexifAdapter
 from exify.models import FileItem, Timestamps, ExifTimestampAttribute
 
 
-class TimestampAnalyzer(BaseAnalyzer):
+class TimestampAnalyzer(SingleFileAnalyzer):
     FILENAME_PATTERN = r'\d{8}'
     FILENAME_DATE_FORMAT = '%Y%m%d'
 

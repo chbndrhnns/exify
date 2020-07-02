@@ -13,6 +13,7 @@ loguru = "*"
 pydantic = {extras = ["dotenv"], version = "*"}
 piexif = "*"
 imagehash = "*"
+aiofiles = "*"
 
 [requires]
 python_version = "3.8"

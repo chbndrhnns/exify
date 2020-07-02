@@ -1,0 +1,43 @@
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140406-WA0007.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140406-WA0004.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140420-WA0003.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140420-WA0002.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140428-WA0002.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140428-WA0001.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140428-WA0005.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140428-WA0001.jpg /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140428-WA0002.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140430-WA0000.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140428-WA0001.jpg /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140428-WA0002.jpg /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140428-WA0005.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140503-WA0007.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140503-WA0006.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140506-WA0001.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140506-WA0000.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140521-WA0002.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140521-WA0001.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140527-WA0004.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140430-WA0003.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140602-WA0006.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140602-WA0005.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140605-WA0001.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140605-WA0000.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140606-WA0004.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140606-WA0003.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140607-WA0006.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140607-WA0001.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140610-WA0003.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140610-WA0002.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140611-WA0001.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140611-WA0000.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140611-WA0010.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140611-WA0009.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140616-WA0004.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140616-WA0003.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140618-WA0002.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140618-WA0001.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140618-WA0006.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140618-WA0005.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140620-WA0003.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140620-WA0002.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140625-WA0002.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140625-WA0001.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140714-WA0007.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140714-WA0006.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140719-WA0002.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140719-WA0001.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140720-WA0005.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140720-WA0004.jpeg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140731-WA0002.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140731-WA0001.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140808-WA0001.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140807-WA0005.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140808-WA0002.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140807-WA0003.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140808-WA0003.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140807-WA0001.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140811-WA0005.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140811-WA0004.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140813-WA0008.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140813-WA0007.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140813-WA0010.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140813-WA0009.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140816-WA0002.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140816-WA0001.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140816-WA0006.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140816-WA0005.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140820-WA0008.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140820-WA0007.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140831-WA0002.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140831-WA0001.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140901-WA0000.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140831-WA0001.jpg /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140831-WA0002.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140905-WA0001.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140905-WA0000.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140915-WA0001.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140915-WA0000.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140919-WA0001.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140919-WA0000.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140925-WA0002.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140925-WA0001.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140927-WA0003.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20140913-WA0000.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20141112-WA0001.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20141112-WA0000.jpg
+/Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20141127-WA0002.jpg   already exists as /Users/jo/dev/exify/src/wa-android-similiarity/combined/IMG-20141127-WA0001.jpg
