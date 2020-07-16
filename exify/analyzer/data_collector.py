@@ -15,9 +15,6 @@ from exify.models import FileMetadata, Dimensions
 from exify.settings import ExifySettings, get_settings
 from exify.utils import call_blocking
 
-WHATSAPP_FILENAME_PATTERN = r'\d{8}'
-WHATSAPP_FILENAME_DATE_FORMAT = '%Y%m%d'
-
 
 class DataCollector:
     def __init__(self, *, settings: ExifySettings = None):
@@ -32,9 +29,8 @@ class DataCollector:
     def items(self) -> MutableMapping[Path, FileMetadata]:
         return self._items
 
-    async def run(self):
-        files = await find_files(self._settings.base_dir)
-
+    async def run(self, files: List[Path] = None):
+        files = files or await find_files(self._settings.base_dir)
         for file in files:
             metadata = FileMetadata(image=file)
             metadata.timestamp_name = await timestamp_from_filename(file)
@@ -54,13 +50,40 @@ def log_timestamp(image: Path, *, loc: str, what: datetime = 'timestamp', ):
 
 
 async def timestamp_from_filename(image: Path) -> datetime:
-    pattern = re.compile(WHATSAPP_FILENAME_PATTERN)
-    matcher = pattern.search(image.stem)
-    result = matcher.group(0)
-    parsed = datetime.strptime(result, WHATSAPP_FILENAME_DATE_FORMAT)
+    strategies = (whatsapp_timestamp, screenshot_timestamp)
 
-    log_timestamp(image, loc='file name', what=parsed)
-    return parsed
+    for strategy in strategies:
+        if match := strategy(image):
+            log_timestamp(image, loc=f'file name ({strategy})', what=match)
+            return match
+
+
+def whatsapp_timestamp(image: Path) -> datetime:
+    pattern = r'\d{8}'
+    date_format = '%Y%m%d'
+
+    return _find_timestamp(image, pattern, date_format)
+
+
+def screenshot_timestamp(image: Path) -> datetime:
+    date_pattern = r'\d{4}-\d{2}-\d{2}'
+    date_format = '%Y-%m-%d'
+    time_pattern = r'\d{2}\.\d{2}\.\d{2}'
+    time_format = '%H.%M.%S'
+
+    if date := _find_timestamp(image, date_pattern, date_format):
+        if time := _find_timestamp(image, time_pattern, time_format):
+            return datetime.combine(date, time.time())
+        else:
+            return date
+
+
+def _find_timestamp(image: Path, pattern: str, parse_as: str) -> datetime:
+    pattern = re.compile(pattern)
+    if matcher := pattern.search(image.stem):
+        if result := matcher.group(0):
+            parsed = datetime.strptime(result, parse_as)
+            return parsed
 
 
 async def timestamp_from_file_system(image: Path, attr) -> datetime:
@@ -90,15 +113,15 @@ async def dimensions(image: Path) -> Dimensions:
             width=data['ImageWidth'],
             height=data['ImageLength']
         )
-    except AttributeError:
+    except (AttributeError, TypeError):
         img = Image.open(image)
-        result = await call_blocking(functools.partial(get_dimensions, img))
+        result = await call_blocking(functools.partial(_dimensions_from_pillow, img))
 
     logger.debug(f'{image}: Dimensions: {result}')
     return result
 
 
-def get_dimensions(image):
+def _dimensions_from_pillow(image):
     width, height = image.size
     return Dimensions(
         width=width,

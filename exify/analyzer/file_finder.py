@@ -11,7 +11,8 @@ async def find_files(start_dir: Path, *, pattern: re.Pattern = None) -> List[Pat
     if pattern:
         is_match = lambda x: re.compile(r'(.*?)').search(x.name)
     else:
-        is_match = lambda x: x.suffix.lower() in ('.jpg', '.jpeg')
+        is_match = lambda x: x.suffix.lower() in ('.jpg', '.jpeg', '.png')
 
-    results = await call_blocking(partial(start_dir.rglob, '*'))
-    return [x.expanduser().absolute() for x in results if x.is_file() and is_match(x)]
+    generator = await call_blocking(partial(start_dir.rglob, '*'))
+    files = [x.expanduser().absolute() for x in generator if x.is_file() and is_match(x)]
+    return files
