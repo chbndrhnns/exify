@@ -8,8 +8,6 @@ import piexif
 from exify.adapter._base import BaseAdapter
 from exify.utils import call_blocking
 
-TIMESTAMP_TYPE = bytes
-
 ATTRIBUTE_TO_TAG_MAP = {
     'DateTime': {'block': '0th', 'attribute': piexif.ImageIFD.DateTime},
     'DateTimeOriginal': {'block': 'Exif', 'attribute': piexif.ExifIFD.DateTimeOriginal},

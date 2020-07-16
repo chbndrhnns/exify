@@ -31,7 +31,7 @@ class WhatsappImageAnalyzer(SingleFileAnalyzer):
         instance = await super().create(item, tasks=tasks, settings=settings)
         instance._adapter = adapter or PiexifAdapter(file_name=instance.item.file)
         instance._tasks = tasks or [
-            await instance.get_size(),
+            await instance.get_dimensions(),
             await instance.get_dimensions(),
             await instance.get_timestamp(),
         ]

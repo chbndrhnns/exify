@@ -20,20 +20,22 @@ class ExifAdapter(BaseAdapter):
     def file_name(self, val):
         self._file_name = val
 
-    @property
-    def image(self) -> Image:
-        if image := self._image or self.read_image():
-            return image
-
     async def read_image(self) -> Image:
-        if filename := self.file_name:
-            async with aiofiles.open(filename, mode='rb') as f:
+        if not self.file_name:
+            raise ValueError('filename needs to be set first')
+
+        if not self._image:
+            async with aiofiles.open(self.file_name, mode='rb') as f:
                 self._image = Image(await f.read())
-                return self._image
-        raise ValueError('filename needs to be set first')
+        return self._image
+
+    async def get_exif_data(self):
+        image = await self.read_image()
+        if image.has_exif:
+            return self._image
 
     async def update_exif_data(self, data):
-        for attr, val in data.three_duplicates():
+        for attr, val in data.items():
             setattr(self.image, attr, val)
 
     async def write_file(self) -> None:

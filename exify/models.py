@@ -36,7 +36,7 @@ class ExifTimestampAttribute(str, Enum):
         return list(map(lambda a: a.value, ExifTimestampAttribute))
 
 
-class ExifDimensions(ExifyBaseModel):
+class Dimensions(ExifyBaseModel):
     width: Optional[int]
     height: Optional[int]
 
@@ -77,7 +77,17 @@ class AnalysisResults(ExifyBaseModel):
 class FileItem(ExifyBaseModel):
     file: Path
     timestamps: Timestamps = Timestamps()
-    dimensions: ExifDimensions = ExifDimensions()
+    dimensions: Dimensions = Dimensions()
     results: AnalysisResults = AnalysisResults()
     size: Optional[int]
     errors: List[ExifyError] = []
+
+
+class FileMetadata(ExifyBaseModel):
+    image: Path
+    timestamp_name: Optional[datetime]
+    timestamp_created: Optional[datetime]
+    timestamp_modified: Optional[datetime]
+    image_hash: Optional[str]
+    size: Optional[int]
+    dimensions: Optional[Dimensions]
