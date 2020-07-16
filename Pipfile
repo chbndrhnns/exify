@@ -12,6 +12,7 @@ pytest-mock = "*"
 loguru = "*"
 pydantic = {extras = ["dotenv"], version = "*"}
 piexif = "*"
+exif = "1.0.0"
 imagehash = "*"
 aiofiles = "*"
 typer = {extras = ["all"], version = "*"}
